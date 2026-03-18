@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Sri6he — Smart Learning Sets</title>
+  <meta name="description" content="Sri6he: study smarter with premium learning sets." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- ── LOGIN MODAL ───────────────────────────────────────── -->
+  <div id="login-overlay" class="overlay hidden">
+    <div class="modal">
+      <div class="modal-logo"><span class="logo-text">Sri6he</span></div>
+      <h2>Admin Sign In</h2>
+      <p class="modal-sub">Restricted to administrators only.</p>
+      <div class="form-group">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" class="glass-input" placeholder="admin@example.com"
+          autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" class="glass-input" placeholder="••••••••"
+          autocomplete="current-password">
+      </div>
+      <p id="login-error" class="error-msg hidden"></p>
+      <button id="login-btn" class="btn-primary full-width">Sign In</button>
+      <button id="login-cancel" class="btn-text full-width" style="margin-top:.25rem">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ── FOLDER MODAL ──────────────────────────────────────── -->
+  <div id="folder-modal-overlay" class="overlay hidden">
+    <div class="modal">
+      <h2 id="folder-modal-title">New Folder</h2>
+      <p class="modal-sub">Organise your sets into folders.</p>
+      <div class="form-group">
+        <label for="folder-name-input">Folder Name</label>
+        <input type="text" id="folder-name-input" class="glass-input" placeholder="e.g. Biology, History…">
+      </div>
+      <div class="form-actions">
+        <button id="folder-modal-save" class="btn-primary">Save</button>
+        <button id="folder-modal-cancel" class="btn-text">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SET MODAL ───────────────────────────────────────── -->
+  <div id="set-modal-overlay" class="overlay hidden">
+    <div class="modal">
+      <h2 id="set-modal-title">New Set</h2>
+      <div class="form-group">
+        <label for="set-title-input">Set Title</label>
+        <input type="text" id="set-title-input" class="glass-input" placeholder="e.g. Chapter 3 Vocabulary">
+      </div>
+      <div class="form-group">
+        <label for="set-folder-select">Folder (optional)</label>
+        <select id="set-folder-select" class="glass-input"></select>
+      </div>
+      <div class="form-actions">
+        <button id="set-modal-save" class="btn-primary">Save</button>
+        <button id="set-modal-cancel" class="btn-text">Discard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CARD MODAL ───────────────────────────────────────── -->
+  <div id="card-modal-overlay" class="overlay hidden">
+    <div class="modal">
+      <h2 id="card-modal-title">Add Card</h2>
+      <div class="form-group">
+        <label for="card-front-input">Term (Front)</label>
+        <textarea id="card-front-input" class="glass-input" rows="3" placeholder="Enter term…"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="card-back-input">Definition (Back)</label>
+        <textarea id="card-back-input" class="glass-input" rows="4" placeholder="Enter definition…"></textarea>
+      </div>
+      <div class="form-actions">
+        <button id="card-modal-save" class="btn-primary">Save Card</button>
+        <button id="card-modal-cancel" class="btn-text">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CONFIRM MODAL ─────────────────────────────────────── -->
+  <div id="confirm-overlay" class="overlay hidden">
+    <div class="modal" style="max-width:380px;text-align:center">
+      <div class="confirm-icon">🗑️</div>
+      <h2 id="confirm-title">Delete?</h2>
+      <p id="confirm-msg" class="modal-sub">This action cannot be undone.</p>
+      <div class="form-actions" style="justify-content:center">
+        <button id="confirm-yes" class="btn-danger">Delete</button>
+        <button id="confirm-no" class="btn-text">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── APP SHELL ─────────────────────────────────────────── -->
+  <div id="app">
+
+    <!-- Desktop Sidebar -->
+    <nav class="sidebar">
+      <div class="logo">Sri6he</div>
+
+      <div class="nav-links">
+        <button class="nav-item active" data-view="dashboard" id="nav-dashboard">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+          </svg>
+          Dashboard
+        </button>
+        <button class="nav-item admin-only hidden" id="nav-new-set">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="16" />
+            <line x1="8" y1="12" x2="16" y2="12" />
+          </svg>
+          New Set
+        </button>
+        <button class="nav-item admin-only hidden" id="nav-new-folder">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+            <line x1="12" y1="11" x2="12" y2="17" />
+            <line x1="9" y1="14" x2="15" y2="14" />
+          </svg>
+          New Folder
+        </button>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div id="admin-badge" class="admin-badge hidden">Admin</div>
+        <button id="logout-btn" class="nav-item hidden">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          Logout
+        </button>
+        <button id="login-nav-btn" class="nav-item">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+            <polyline points="10 17 15 12 10 7" />
+            <line x1="15" y1="12" x2="3" y2="12" />
+          </svg>
+          Admin Login
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="content">
+      <header class="top-nav">
+        <h1 id="view-title"></h1>
+        <div id="top-actions" class="top-actions"></div>
+      </header>
+
+      <!-- Dashboard -->
+      <section id="dashboard-view" class="view">
+        <div id="folders-section"></div>
+        <div id="unfoldered-section">
+          <div class="section-heading">All Sets</div>
+          <div class="set-grid" id="set-list"></div>
+        </div>
+      </section>
+
+      <!-- Set Detail -->
+      <section id="set-view" class="view hidden">
+        <div class="set-view-header" id="set-view-hdr">
+          <button class="back-btn" id="back-to-dashboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Back
+          </button>
+          <div>
+            <h2 id="set-view-title">Set</h2>
+            <p id="set-view-count" class="card-count"></p>
+          </div>
+        </div>
+        <div id="cards-list" class="cards-list"></div>
+      </section>
+
+      <!-- Study -->
+      <section id="study-view" class="view hidden">
+        <div class="study-header-alt">
+          <button id="back-from-study" class="back-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Exit
+          </button>
+          <div style="flex:1;margin:0 1.5rem">
+            <div id="study-set-title">Studying…</div>
+            <div class="progress-bar-bg"
+              style="height:5px;border-radius:3px;margin-top:.5rem;background:var(--surface2)">
+              <div id="study-progress-bar"
+                style="height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0%;transition:width .4s ease">
+              </div>
+            </div>
+          </div>
+          <span id="study-progress-text">1 / 1</span>
+        </div>
+
+        <div class="flashcard-container">
+          <div class="flashcard" id="main-flashcard">
+            <div class="card-face front">
+              <span class="card-hint">TERM</span>
+              <p id="card-front-text"></p>
+              <div class="click-hint">Tap to flip →</div>
+            </div>
+            <div class="card-face back">
+              <span class="card-hint">DEFINITION</span>
+              <p id="card-back-text"></p>
+              <div class="click-hint">← Tap to flip back</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="study-actions">
+          <button id="prev-card" class="glass-btn study-nav">←</button>
+          <div class="study-shortcuts">
+            <button id="mark-easy" class="glass-btn premium-btn"
+              style="border-color:rgba(52,211,153,.35);color:var(--green)">✓ Easy</button>
+            <button id="mark-hard" class="glass-btn premium-btn"
+              style="border-color:rgba(248,113,113,.35);color:var(--red)">✕ Hard</button>
+          </div>
+          <button id="next-card" class="glass-btn study-nav">→</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Mobile Bottom Nav -->
+    <nav class="mobile-nav">
+      <button class="nav-item active" data-view="dashboard">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <rect x="3" y="3" width="7" height="7" />
+          <rect x="14" y="3" width="7" height="7" />
+          <rect x="14" y="14" width="7" height="7" />
+          <rect x="3" y="14" width="7" height="7" />
+        </svg>
+        Home
+      </button>
+      <button class="nav-item admin-only hidden" id="mobile-new-set">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="16" />
+          <line x1="8" y1="12" x2="16" y2="12" />
+        </svg>
+        Set
+      </button>
+      <button class="nav-item admin-only hidden" id="mobile-new-folder">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+          <line x1="12" y1="11" x2="12" y2="17" />
+          <line x1="9" y1="14" x2="15" y2="14" />
+        </svg>
+        Folder
+      </button>
+      <button class="nav-item" id="mobile-login-btn">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+        Admin
+      </button>
+      <button class="nav-item hidden" id="mobile-logout-btn">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+        Exit
+      </button>
+    </nav>
+  </div><!-- /#app -->
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
