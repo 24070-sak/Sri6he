@@ -1,10 +1,10 @@
 services:
   - type: web
-    name: sri6he-flashcards
-    env: static
+    name: sri6he-flashcards-api
+    env: node
     buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    startCommand: node server.js
+    disk:
+      name: sqlite-data
+      mountPath: /data
+      sizeGB: 1

@@ -1,133 +1,76 @@
-import { openDB } from 'idb';
+// Replaced IndexedDB with a standard backend REST API integration to stock data forever in an SQL database!
 
-const DB_NAME = 'flashflow_db';
-const DB_VERSION = 3; // Bump version to handle restoring the old schema securely
+const API = '/api';
 
-let dbPromise;
-
-export function getDb() {
-    if (!dbPromise) {
-        dbPromise = openDB(DB_NAME, DB_VERSION, {
-            upgrade(db, oldVersion, newVersion, transaction) {
-                // Keep folders
-                if (!db.objectStoreNames.contains('folders')) {
-                    const folderStore = db.createObjectStore('folders', { keyPath: 'id', autoIncrement: true });
-                    folderStore.createIndex('name', 'name');
-                }
-
-                // We revert internal usage to 'decks', to restore user data
-                if (!db.objectStoreNames.contains('decks')) {
-                    const deckStore = db.createObjectStore('decks', { keyPath: 'id', autoIncrement: true });
-                    deckStore.createIndex('folderId', 'folderId');
-                }
-
-                // Cards store
-                if (!db.objectStoreNames.contains('cards')) {
-                    const cardStore = db.createObjectStore('cards', { keyPath: 'id', autoIncrement: true });
-                    cardStore.createIndex('deckId', 'deckId');
-                } else {
-                    // Restore deckId index if it was removed in v2
-                    const cardStore = transaction.objectStore('cards');
-                    if (!cardStore.indexNames.contains('deckId')) {
-                        cardStore.createIndex('deckId', 'deckId');
-                    }
-                }
-            }
-        });
+async function request(url, method = 'GET', body = null) {
+    const options = { method, headers: {} };
+    if (body) {
+        options.headers['Content-Type'] = 'application/json';
+        options.body = JSON.stringify(body);
     }
-    return dbPromise;
+    const res = await fetch(API + url, options);
+    if (!res.ok) throw new Error('API request failed');
+    return res.json();
 }
 
 // --- Folder Operations ---
 export async function getFolders() {
-    const db = await getDb();
-    return db.getAll('folders');
+    return request('/folders');
 }
 
 export async function addFolder(name) {
-    const db = await getDb();
-    return db.add('folders', { name, createdAt: Date.now() });
+    const r = await request('/folders', 'POST', { name, createdAt: Date.now() });
+    return r.id;
 }
 
 export async function updateFolder(id, name) {
-    const db = await getDb();
-    const folder = await db.get('folders', id);
-    if (!folder) return;
-    folder.name = name;
-    return db.put('folders', folder);
+    return request(`/folders/${id}`, 'PUT', { name });
 }
 
 export async function deleteFolder(id) {
-    const db = await getDb();
-    // Cascade delete sets and their cards
-    const sets = await getSetsByFolder(id);
-    for (const setItem of sets) {
-        await deleteSet(setItem.id);
-    }
-    return db.delete('folders', id);
+    return request(`/folders/${id}`, 'DELETE');
 }
 
-// --- Set Operations (Internally uses 'decks' to retrieve old data) ---
+// --- Set Operations ---
 export async function getSets() {
-    const db = await getDb();
-    return db.getAll('decks');
+    return request('/sets');
 }
 
 export async function getSetsByFolder(folderId) {
-    const db = await getDb();
-    return db.getAllFromIndex('decks', 'folderId', folderId);
+    return request(`/sets/folder/${folderId}`);
 }
 
 export async function getSet(id) {
-    const db = await getDb();
-    return db.get('decks', id);
+    return request(`/sets/${id}`);
 }
 
 export async function addSet(title, folderId) {
-    const db = await getDb();
-    return db.add('decks', { title, folderId: folderId || null, createdAt: Date.now() });
+    const r = await request('/sets', 'POST', { title, folderId, createdAt: Date.now() });
+    return r.id;
 }
 
 export async function updateSet(id, title, folderId) {
-    const db = await getDb();
-    const setItem = await db.get('decks', id);
-    if (!setItem) return;
-    setItem.title = title;
-    setItem.folderId = folderId !== undefined ? folderId : setItem.folderId;
-    return db.put('decks', setItem);
+    return request(`/sets/${id}`, 'PUT', { title, folderId });
 }
 
 export async function deleteSet(id) {
-    const db = await getDb();
-    // Cascade delete cards
-    const cards = await getCardsBySet(id);
-    for (const card of cards) {
-        await db.delete('cards', card.id);
-    }
-    return db.delete('decks', id);
+    return request(`/sets/${id}`, 'DELETE');
 }
 
 // --- Card Operations ---
 export async function getCardsBySet(setId) {
-    const db = await getDb();
-    return db.getAllFromIndex('cards', 'deckId', setId);
+    return request(`/cards/set/${setId}`);
 }
 
 export async function addCard(setId, front, back) {
-    const db = await getDb();
-    return db.add('cards', { deckId: setId, front, back, createdAt: Date.now() });
+    const r = await request('/cards', 'POST', { setId, front, back, createdAt: Date.now() });
+    return r.id;
 }
 
 export async function updateCard(id, front, back) {
-    const db = await getDb();
-    const card = await db.get('cards', id);
-    if (!card) return;
-    card.front = front;
-    card.back = back;
-    return db.put('cards', card);
+    return request(`/cards/${id}`, 'PUT', { front, back });
 }
 
 export async function deleteCard(id) {
-    const db = await getDb();
-    return db.delete('cards', id);
+    return request(`/cards/${id}`, 'DELETE');
 }
