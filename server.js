@@ -136,7 +136,9 @@ app.delete('/api/cards/:id', async (req, res) => {
 
 // ======================== SERVE FRONTEND OUT OF DIST ========================
 app.use(express.static(join(__dirname, 'dist')));
-app.get('*', (req, res) => {
+
+// SPA Catch-all (using app.use instead of app.get('*') to avoid Express path-to-regexp wildcard parsing errors)
+app.use((req, res) => {
     res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
 
