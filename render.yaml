@@ -4,7 +4,3 @@ services:
     env: node
     buildCommand: npm install && npm run build
     startCommand: node server.js
-    disk:
-      name: sqlite-data
-      mountPath: /data
-      sizeGB: 1
