@@ -26,6 +26,17 @@ if (process.env.DATABASE_URL) {
         logging: false
     });
 } else {
+    if (process.env.RENDER) {
+        console.error("\n==========================================================");
+        console.error("⛔ CRITICAL ERROR: NO DATABASE_URL CONFIGURED!");
+        console.error("You are deploying to Render but forgot to add the PostgreSQL");
+        console.error("DATABASE_URL in the Environment Variables tab.");
+        console.error("Your app will intentionally pause here until you add it,");
+        console.error("because free-tier cannot permanently save your flashcards.");
+        console.error("==========================================================\n");
+        process.exit(1);
+    }
+
     // Local Development SQLite mapping fallback
     sequelize = new Sequelize({
         dialect: 'sqlite',
