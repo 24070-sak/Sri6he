@@ -102,7 +102,7 @@ function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
   document.getElementById(`${name}-view`).classList.remove('hidden');
 
-  const titles = { dashboard: 'Dashboard', set: '', study: 'Study Mode' };
+  const titles = { dashboard: '', set: '', study: 'Study Mode' };
   document.getElementById('view-title').textContent = titles[name] || '';
 
   // Nav active state (Desktop & Mobile)
