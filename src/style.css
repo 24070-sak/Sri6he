@@ -728,12 +728,7 @@ textarea.glass-input {
   gap: 1rem;
 }
 
-.study-shortcuts {
-  display: flex;
-  gap: .75rem;
-  flex: 1;
-  justify-content: center;
-}
+
 
 .study-nav {
   width: 52px;
@@ -925,15 +920,7 @@ textarea.glass-input {
     gap: .75rem;
   }
 
-  .study-shortcuts {
-    order: -1;
-    width: 100%;
-  }
 
-  .premium-btn {
-    max-width: none;
-    padding: .8rem;
-  }
 
   .set-view-header {
     flex-direction: row;

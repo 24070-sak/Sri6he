@@ -596,16 +596,6 @@ function setupStaticListeners() {
       renderStudyCard();
     }
   };
-
-  document.getElementById('mark-easy').onclick = () => {
-    showToast('Marked as Easy ✅');
-    document.getElementById('next-card').click();
-  };
-
-  document.getElementById('mark-hard').onclick = () => {
-    showToast('Marked as Hard 🔁');
-    document.getElementById('next-card').click();
-  };
 }
 
 // ============================================================
