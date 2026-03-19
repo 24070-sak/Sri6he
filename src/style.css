@@ -401,6 +401,18 @@ button {
   gap: .5rem;
 }
 
+.set-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  gap: 1rem;
+}
+
+.set-footer .action-btns {
+  margin-right: auto;
+}
+
 /* ── Empty State ─────────────────────────────────────────── */
 .empty-state {
   display: flex;

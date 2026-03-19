@@ -136,6 +136,10 @@ async function renderDashboard() {
 
   const [folders, sets] = await Promise.all([getFolders(), getSets()]);
 
+  // Attach card counts for display
+  const allCardsArrays = await Promise.all(sets.map(s => getCardsBySet(s.id)));
+  sets.forEach((s, idx) => s.cardCount = allCardsArrays[idx].length);
+
   // ---- Folders ----
   const foldersSection = document.getElementById('folders-section');
   foldersSection.innerHTML = '';
@@ -226,14 +230,15 @@ function renderSetCards(sets, admin) {
     <div class="set-card glass-card" data-set-id="${setItem.id}" style="cursor:pointer;">
       <div class="set-info">
         <h3>${escHtml(setItem.title)}</h3>
+        <div class="card-count" style="margin-top:0">${setItem.cardCount || 0} card${setItem.cardCount !== 1 ? 's' : ''}</div>
       </div>
       <div class="set-footer">
-        <button class="btn-primary glass-btn set-study-btn" data-id="${setItem.id}" style="font-size:.8rem;padding:.45rem 1rem;">Study</button>
         ${admin ? `
         <div class="action-btns">
           <button class="icon-btn set-edit-btn" data-id="${setItem.id}" title="Edit">${iconPencil()}</button>
           <button class="icon-btn danger set-delete-btn" data-id="${setItem.id}" title="Delete">${iconTrash()}</button>
         </div>` : ''}
+        <button class="btn-primary glass-btn set-study-btn" data-id="${setItem.id}" style="font-size:.8rem;padding:.45rem 1rem;">Study</button>
       </div>
     </div>
   `).join('');
