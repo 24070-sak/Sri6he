@@ -11,8 +11,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+import fs from 'fs';
+
 // Set up SQLite inside the Render persistent disk folder or local root
-const dbPath = process.env.RENDER ? '/data/database.sqlite' : 'database.sqlite';
+let dbPath = 'database.sqlite';
+if (process.env.RENDER) {
+    if (fs.existsSync('/data')) {
+        dbPath = '/data/database.sqlite';
+    } else {
+        console.warn('WARNING: /data volume not found. Using ephemeral local SQLite file.');
+    }
+}
 const db = new Database(dbPath, { verbose: console.log });
 db.pragma('journal_mode = WAL');
 
