@@ -1,4 +1,5 @@
 import './style.css';
+import { openDB } from 'idb';
 import { login, logout, getSession, isAdmin } from './auth.js';
 import {
   getFolders, addFolder, updateFolder, deleteFolder,
@@ -24,31 +25,56 @@ const state = {
 };
 
 // ============================================================
-//  BOOTSTRAP & SEED
+//  BOOTSTRAP & MIGRATE
 // ============================================================
 async function init() {
   setupStaticListeners();
   applyAuthUI();
-  await checkAndSeedData();
+  await migrateFromIndexedDB();
   await renderDashboard();
 }
 
-async function checkAndSeedData() {
-  const folders = await getFolders();
-  const sets = await getSets();
+async function migrateFromIndexedDB() {
+  try {
+    const folders = await getFolders();
+    const sets = await getSets();
 
-  // If the user's DB is totally empty (e.g. a new visitor on a deployed site), we inject some starter data.
-  if (folders.length === 0 && sets.length === 0) {
-    const fId = await addFolder('Frontend Engineering');
+    // Only migrate if SQLite backend is completely empty
+    if (folders.length > 0 || sets.length > 0) return;
 
-    const sId = await addSet('React Hooks', fId);
-    await addCard(sId, 'useState', 'Allows you to add React state to function components.');
-    await addCard(sId, 'useEffect', 'Lets you perform side effects in function components.');
-    await addCard(sId, 'useContext', 'Accepts a context object and returns the current context value.');
+    // Connect to the old local IndexedDB
+    const db = await openDB('flashflow_db', 3);
+    const oldFolders = await db.getAll('folders');
+    const oldDecks = await db.getAll('decks');
+    const oldCards = await db.getAll('cards');
 
-    const sId2 = await addSet('General Vocabulary', null);
-    await addCard(sId2, 'Ephemeral', 'Lasting for a very short time.');
-    await addCard(sId2, 'Serendipity', 'The occurrence and development of events by chance in a happy or beneficial way.');
+    // Mappings to link old IDB IDs to new SQLite IDs
+    const folderIdMap = {};
+    const setIdMap = {};
+
+    console.log("Migrating older local data to SQLite server...");
+
+    for (const f of oldFolders) {
+      const newId = await addFolder(f.name);
+      folderIdMap[f.id] = newId;
+    }
+
+    for (const d of oldDecks) {
+      const mappedFolderId = d.folderId ? folderIdMap[d.folderId] : null;
+      const newId = await addSet(d.title, mappedFolderId);
+      setIdMap[d.id] = newId;
+    }
+
+    for (const c of oldCards) {
+      const mappedSetId = setIdMap[c.deckId || c.setId];
+      if (mappedSetId) {
+        await addCard(mappedSetId, c.front, c.back);
+      }
+    }
+
+    console.log("Migration finished successfully!");
+  } catch (error) {
+    console.log("No older local data found to migrate.");
   }
 }
 
