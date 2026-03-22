@@ -4,6 +4,7 @@
    ========================================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
 
 /* ── Tokens ──────────────────────────────────────────────── */
 :root {
@@ -492,6 +493,99 @@ button {
   letter-spacing: -0.5px;
   margin-bottom: 0.2rem;
   line-height: 1.2;
+}
+
+/* ── Translate Button ────────────────────────────────────── */
+.icon-btn.translate-active {
+  background: rgba(124, 109, 255, .15);
+  color: var(--accent);
+  border-color: rgba(124, 109, 255, .4);
+}
+
+/* ── Arabic Translation Panel ────────────────────────────── */
+.arabic-translation {
+  margin-top: .9rem;
+  padding-top: .9rem;
+  border-top: 1px dashed var(--border);
+  font-family: 'Cairo', 'Outfit', sans-serif;
+  direction: rtl;
+  text-align: right;
+  animation: fadeUp .25s ease-out;
+}
+
+.arabic-label {
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: .5rem;
+  opacity: .85;
+}
+
+.arabic-front {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--txt);
+  margin-bottom: .25rem;
+  line-height: 1.6;
+}
+
+.arabic-back {
+  font-size: .95rem;
+  color: var(--txt-muted);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.arabic-error {
+  font-size: .85rem;
+  color: var(--red);
+  font-family: var(--font);
+}
+
+/* Loading dots */
+.arabic-loading {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: .35rem;
+  padding: .25rem 0;
+}
+
+.arabic-loading span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: dotPulse 1.2s infinite ease-in-out;
+}
+
+.arabic-loading span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.arabic-loading span:nth-child(2) {
+  animation-delay: .2s;
+}
+
+.arabic-loading span:nth-child(3) {
+  animation-delay: .4s;
+}
+
+@keyframes dotPulse {
+
+  0%,
+  80%,
+  100% {
+    transform: scale(.6);
+    opacity: .35;
+  }
+
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .card-row-actions {

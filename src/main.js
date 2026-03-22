@@ -282,12 +282,15 @@ function renderCardList(cards) {
       <div class="card-row-content">
         <div class="card-front">${escHtml(card.front)}</div>
         <div class="card-back">${escHtml(card.back)}</div>
+        <div class="arabic-translation hidden" dir="rtl"></div>
       </div>
-      ${admin ? `
       <div class="card-row-actions">
+        <button class="icon-btn translate-btn" data-id="${card.id}" data-front="${escHtml(card.front)}" data-back="${escHtml(card.back)}" title="Translate to Arabic">${iconTranslate()}</button>
+        ${admin ? `
         <button class="icon-btn edit-card-btn" data-id="${card.id}" title="Edit">${iconPencil()}</button>
         <button class="icon-btn danger delete-card-btn" data-id="${card.id}" title="Delete">${iconTrash()}</button>
-      </div>` : ''}
+        ` : ''}
+      </div>
     </div>
   `).join('');
 
@@ -296,6 +299,49 @@ function renderCardList(cards) {
   studyBtn.innerHTML = `<button class="btn-primary" id="start-study-from-set">Study This Set</button>`;
   list.appendChild(studyBtn);
   document.getElementById('start-study-from-set').onclick = () => startStudy(state.currentSetId);
+
+  // Translate buttons
+  list.querySelectorAll('.translate-btn').forEach(btn => {
+    btn.onclick = async () => {
+      const row = btn.closest('.card-row');
+      const arabicDiv = row.querySelector('.arabic-translation');
+
+      // Toggle OFF
+      if (!arabicDiv.classList.contains('hidden')) {
+        arabicDiv.classList.add('hidden');
+        arabicDiv.innerHTML = '';
+        btn.classList.remove('translate-active');
+        btn.title = 'Translate to Arabic';
+        return;
+      }
+
+      // Show loading state
+      btn.classList.add('translate-active');
+      btn.title = 'Hide Arabic';
+      arabicDiv.classList.remove('hidden');
+      arabicDiv.innerHTML = `<div class="arabic-loading">
+        <span></span><span></span><span></span>
+      </div>`;
+
+      const front = btn.dataset.front;
+      const back = btn.dataset.back;
+
+      try {
+        const [trFront, trBack] = await Promise.all([
+          translateToArabic(front),
+          translateToArabic(back)
+        ]);
+        arabicDiv.innerHTML = `
+          <div class="arabic-label">ترجمة عربية</div>
+          <div class="arabic-front">${escHtml(trFront)}</div>
+          <div class="arabic-back">${escHtml(trBack)}</div>
+        `;
+      } catch (e) {
+        arabicDiv.innerHTML = `<div class="arabic-error">⚠️ Translation failed. Try again.</div>`;
+        btn.classList.remove('translate-active');
+      }
+    };
+  });
 
   if (admin) {
     list.querySelectorAll('.edit-card-btn').forEach(btn => {
@@ -610,6 +656,17 @@ const iconPencil = () => `<svg class="icon" xmlns="http://www.w3.org/2000/svg" v
 const iconTrash = () => `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
 const iconPlus = () => `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`;
 const iconInbox = () => `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px;opacity:0.25;display:block;margin:0 auto 1rem"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>`;
+const iconTranslate = () => `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>`;
+
+// ── Translation Helper (MyMemory free API) ──────────────────
+async function translateToArabic(text) {
+  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|ar`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Network error');
+  const data = await res.json();
+  if (data.responseStatus !== 200) throw new Error(data.responseDetails || 'Translation failed');
+  return data.responseData.translatedText;
+}
 
 const escHtml = (str) => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
