@@ -3,6 +3,7 @@ import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { Sequelize, DataTypes } from 'sequelize';
+import https from 'https';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -136,6 +137,22 @@ app.delete('/api/cards/:id', async (req, res) => {
 
 // ======================== SERVE FRONTEND OUT OF DIST ========================
 app.use(express.static(join(__dirname, 'dist')));
+
+// ======================== RENDER KEEP-ALIVE ========================
+// Prevent the free tier from sleeping after 15 minutes of inactivity
+app.get('/api/keepalive', (req, res) => {
+    res.status(200).send('Alive');
+});
+
+if (process.env.RENDER_EXTERNAL_URL) {
+    setInterval(() => {
+        https.get(`${process.env.RENDER_EXTERNAL_URL}/api/keepalive`, (resp) => {
+            console.log(`[Keep-Alive] Pinged ${process.env.RENDER_EXTERNAL_URL} - Status: ${resp.statusCode}`);
+        }).on("error", (err) => {
+            console.error(`[Keep-Alive] Ping failed:`, err.message);
+        });
+    }, 14 * 60 * 1000); // 14 minutes
+}
 
 // SPA Catch-all (using app.use instead of app.get('*') to avoid Express path-to-regexp wildcard parsing errors)
 app.use((req, res) => {
