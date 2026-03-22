@@ -391,6 +391,17 @@ function renderStudyCard() {
   const fc = document.getElementById('main-flashcard');
   fc.classList.remove('flipped');
   state.isFlipped = false;
+
+  // Clear translation on card change
+  const arabicDiv = document.getElementById('study-arabic-translation');
+  if (arabicDiv) {
+    arabicDiv.classList.add('hidden');
+    arabicDiv.innerHTML = '';
+  }
+  const transBtn = document.getElementById('study-translate-btn');
+  if (transBtn) {
+    transBtn.classList.remove('translate-active');
+  }
 }
 
 // ============================================================
@@ -646,6 +657,41 @@ function setupStaticListeners() {
       renderStudyCard();
     }
   };
+
+  // ---- Study Translation ----
+  const studyTransBtn = document.getElementById('study-translate-btn');
+  if (studyTransBtn) {
+    studyTransBtn.onclick = async () => {
+      const card = state.currentCards[state.studyIndex];
+      const arabicDiv = document.getElementById('study-arabic-translation');
+
+      if (!arabicDiv.classList.contains('hidden')) {
+        arabicDiv.classList.add('hidden');
+        arabicDiv.innerHTML = '';
+        studyTransBtn.classList.remove('translate-active');
+        return;
+      }
+
+      studyTransBtn.classList.add('translate-active');
+      arabicDiv.classList.remove('hidden');
+      arabicDiv.innerHTML = `<div class="arabic-loading"><span></span><span></span><span></span></div>`;
+
+      try {
+        const [trFront, trBack] = await Promise.all([
+          translateToArabic(card.front),
+          translateToArabic(card.back)
+        ]);
+        arabicDiv.innerHTML = `
+          <div class="arabic-label">ترجمة عربية</div>
+          <div class="arabic-front">${escHtml(trFront)}</div>
+          <div class="arabic-back">${escHtml(trBack)}</div>
+        `;
+      } catch (e) {
+        arabicDiv.innerHTML = `<div class="arabic-error">⚠️ Translation failed.</div>`;
+        studyTransBtn.classList.remove('translate-active');
+      }
+    };
+  }
 }
 
 // ============================================================
@@ -657,15 +703,17 @@ const iconPlus = () => `<svg class="icon" xmlns="http://www.w3.org/2000/svg" vie
 const iconInbox = () => `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px;opacity:0.25;display:block;margin:0 auto 1rem"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>`;
 const iconTranslate = () => `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>`;
 
-// ── Translation Helper (MyMemory free API) ──────────────────
+// ── Translation Helper (Google Translate unofficial API - Auto SL) ──────────
 async function translateToArabic(text) {
-  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|ar`;
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ar&dt=t&q=${encodeURIComponent(text)}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error('Network error');
   const data = await res.json();
-  if (data.responseStatus !== 200) throw new Error(data.responseDetails || 'Translation failed');
-  return data.responseData.translatedText;
+  // Google returns an array of arrays for sentences
+  if (!data || !data[0]) throw new Error('Translation failed');
+  return data[0].map(x => x[0]).join('');
 }
+
 
 const escHtml = (str) => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
