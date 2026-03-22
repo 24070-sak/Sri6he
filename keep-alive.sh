@@ -3,10 +3,10 @@
 # ============================================================
 #  keep-alive.sh — Prevent Render free tier from sleeping
 #  Usage: bash keep-alive.sh [URL]
-#  Example: bash keep-alive.sh https://sri6he-flashcards-api.onrender.com
+#  Example: bash keep-alive.sh https://sri6ha.onrender.com
 # ============================================================
 
-URL="${1:-https://sri6he-flashcards-api.onrender.com}"
+URL="${1:-https://sri6ha.onrender.com}"
 INTERVAL=840  # 14 minutes in seconds (Render sleeps after 15 min)
 
 echo "==========================================="
