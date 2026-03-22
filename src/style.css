@@ -459,6 +459,30 @@ button {
   align-items: flex-start;
   gap: 1.5rem;
   transition: border-color var(--transition);
+  position: relative;
+}
+
+/* Translate button — top-right corner, appears on hover */
+.translate-corner {
+  position: absolute;
+  top: .6rem;
+  right: .6rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity var(--transition), background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.card-row:hover .translate-corner {
+  opacity: 1;
+}
+
+.translate-corner.translate-active {
+  opacity: 1;
+  background: rgba(124, 109, 255, .15);
+  color: var(--accent);
+  border-color: rgba(124, 109, 255, .4);
 }
 
 .card-row:hover {
@@ -493,13 +517,6 @@ button {
   letter-spacing: -0.5px;
   margin-bottom: 0.2rem;
   line-height: 1.2;
-}
-
-/* ── Translate Button ────────────────────────────────────── */
-.icon-btn.translate-active {
-  background: rgba(124, 109, 255, .15);
-  color: var(--accent);
-  border-color: rgba(124, 109, 255, .4);
 }
 
 /* ── Arabic Translation Panel ────────────────────────────── */

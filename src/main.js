@@ -279,18 +279,17 @@ function renderCardList(cards) {
 
   list.innerHTML = cards.map(card => `
     <div class="card-row" data-card-id="${card.id}">
+      <button class="icon-btn translate-btn translate-corner" data-id="${card.id}" data-front="${escHtml(card.front)}" data-back="${escHtml(card.back)}" title="Translate to Arabic">${iconTranslate()}</button>
       <div class="card-row-content">
         <div class="card-front">${escHtml(card.front)}</div>
         <div class="card-back">${escHtml(card.back)}</div>
         <div class="arabic-translation hidden" dir="rtl"></div>
       </div>
+      ${admin ? `
       <div class="card-row-actions">
-        <button class="icon-btn translate-btn" data-id="${card.id}" data-front="${escHtml(card.front)}" data-back="${escHtml(card.back)}" title="Translate to Arabic">${iconTranslate()}</button>
-        ${admin ? `
         <button class="icon-btn edit-card-btn" data-id="${card.id}" title="Edit">${iconPencil()}</button>
         <button class="icon-btn danger delete-card-btn" data-id="${card.id}" title="Delete">${iconTrash()}</button>
-        ` : ''}
-      </div>
+      </div>` : ''}
     </div>
   `).join('');
 
