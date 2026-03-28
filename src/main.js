@@ -14,6 +14,7 @@ const state = {
   view: 'dashboard',          // 'dashboard' | 'set' | 'study'
   currentSetId: null,
   currentCards: [],
+  subSets: [],
   studyIndex: 0,
   isFlipped: false,
   // edit tracking
@@ -140,12 +141,15 @@ async function renderDashboard() {
   const allCardsArrays = await Promise.all(sets.map(s => getCardsBySet(s.id)));
   sets.forEach((s, idx) => s.cardCount = allCardsArrays[idx].length);
 
+  // Filter for top-level sets only
+  const topLevelSets = sets.filter(s => !s.parentSetId);
+
   // ---- Folders ----
   const foldersSection = document.getElementById('folders-section');
   foldersSection.innerHTML = '';
 
   for (const folder of folders) {
-    const folderSets = sets.filter(s => s.folderId === folder.id);
+    const folderSets = topLevelSets.filter(s => s.folderId === folder.id);
     const block = document.createElement('div');
     block.className = 'folder-block';
     block.innerHTML = `
@@ -191,7 +195,7 @@ async function renderDashboard() {
 
   // ---- Unfoldered sets ----
   const unfolderedSection = document.getElementById('unfoldered-section');
-  const unfolderedSets = sets.filter(s => s.folderId === null || s.folderId === undefined);
+  const unfolderedSets = topLevelSets.filter(s => s.folderId === null || s.folderId === undefined);
 
   // Hide heading if empty
   if (folders.length > 0 && unfolderedSets.length === 0) {
@@ -249,19 +253,53 @@ function renderSetCards(sets, admin) {
 // ============================================================
 async function openSetView(setId) {
   state.currentSetId = setId;
-  const [setItem, cards] = await Promise.all([getSet(setId), getCardsBySet(setId)]);
+  const [setItem, cards, allSets] = await Promise.all([getSet(setId), getCardsBySet(setId), getSets()]);
   state.currentCards = cards;
+  state.subSets = allSets.filter(s => s.parentSetId === setId);
+
+  // Calculate card counts for sub-sets
+  const subSetCardCounts = await Promise.all(state.subSets.map(s => getCardsBySet(s.id)));
+  state.subSets.forEach((s, idx) => s.cardCount = subSetCardCounts[idx].length);
 
   document.getElementById('set-view-title').textContent = setItem.title;
   document.getElementById('set-view-count').textContent = `${cards.length} card${cards.length !== 1 ? 's' : ''}`;
 
   // Top action area
   const topActions = document.getElementById('top-actions');
-  if (isAdmin()) {
-    topActions.innerHTML = `<button class="btn-primary" id="top-add-card">+ Add Card</button>`;
+  const admin = isAdmin();
+  if (admin) {
+    topActions.innerHTML = `
+      <button class="btn-primary" id="top-add-card">+ Add Card</button>
+      <button class="glass-btn" id="top-add-subset">+ New Sub-Set</button>
+    `;
     document.getElementById('top-add-card').onclick = () => openCardModal();
+    document.getElementById('top-add-subset').onclick = () => openSetModal(null, null, setId);
   } else {
     topActions.innerHTML = '';
+  }
+
+  // Render Sub-Sets
+  const subList = document.getElementById('sub-sets-list');
+  if (state.subSets.length > 0) {
+    subList.innerHTML = `<div class="section-heading" style="grid-column:1/-1">Sub-Sets</div>` + renderSetCards(state.subSets, admin);
+    subList.classList.remove('hidden');
+
+    // Attach sub-set events
+    subList.querySelectorAll('.set-study-btn').forEach(btn => {
+      btn.onclick = (e) => { e.stopPropagation(); startStudy(parseInt(btn.dataset.id)); };
+    });
+    subList.querySelectorAll('.set-edit-btn').forEach(btn => {
+      btn.onclick = (e) => { e.stopPropagation(); const s = state.subSets.find(x => x.id === parseInt(btn.dataset.id)); openSetModal(s.id, s.folderId, s.parentSetId, s.title); };
+    });
+    subList.querySelectorAll('.set-delete-btn').forEach(btn => {
+      btn.onclick = (e) => { e.stopPropagation(); const s = state.subSets.find(x => x.id === parseInt(btn.dataset.id)); confirmDelete(`Delete set "${s.title}" and all its children?`, () => deleteSet(s.id).then(() => openSetView(setId))); };
+    });
+    subList.querySelectorAll('.set-card[data-set-id]').forEach(card => {
+      card.onclick = () => openSetView(parseInt(card.dataset.setId));
+    });
+  } else {
+    subList.innerHTML = '';
+    subList.classList.add('hidden');
   }
 
   renderCardList(cards);
@@ -448,18 +486,28 @@ async function saveFolderModal() {
 }
 
 // --- Set Modal ---
-async function openSetModal(id = null, folderId = null, title = '') {
+async function openSetModal(id = null, folderId = null, parentSetId = null, title = '') {
   state.editSetId = id;
   document.getElementById('set-modal-title').textContent = id ? 'Edit Set' : 'New Set';
   document.getElementById('set-title-input').value = title;
 
   // Populate folder select
   const folders = await getFolders();
-  const sel = document.getElementById('set-folder-select');
-  sel.innerHTML = `<option value="">— No Folder —</option>` +
+  const selFolder = document.getElementById('set-folder-select');
+  selFolder.innerHTML = `<option value="">— No Folder —</option>` +
     folders.map(f => `<option value="${f.id}" ${f.id === folderId ? 'selected' : ''}>${escHtml(f.name)}</option>`).join('');
 
-  if (folderId) sel.value = folderId;
+  if (folderId) selFolder.value = folderId;
+
+  // Populate parent set select
+  const allSets = await getSets();
+  const selParent = document.getElementById('set-parent-select');
+  selParent.innerHTML = `<option value="">— No Parent Set —</option>` +
+    allSets
+      .filter(s => s.id !== id) // Can't be parent of itself
+      .map(s => `<option value="${s.id}" ${s.id === parentSetId ? 'selected' : ''}>${escHtml(s.title)}</option>`).join('');
+
+  if (parentSetId) selParent.value = parentSetId;
 
   document.getElementById('set-modal-overlay').classList.remove('hidden');
   setTimeout(() => document.getElementById('set-title-input').focus(), 50);
@@ -473,24 +521,44 @@ function closeSetModal() {
 async function saveSetModal() {
   const title = document.getElementById('set-title-input').value.trim();
   if (!title) return;
-  const sel = document.getElementById('set-folder-select');
-  const folderId = sel.value ? parseInt(sel.value) : null;
+  const selFolder = document.getElementById('set-folder-select');
+  const folderId = selFolder.value ? parseInt(selFolder.value) : null;
+  const selParent = document.getElementById('set-parent-select');
+  const parentSetId = selParent.value ? parseInt(selParent.value) : null;
 
   if (state.editSetId) {
-    await updateSet(state.editSetId, title, folderId);
+    await updateSet(state.editSetId, title, folderId, parentSetId);
   } else {
-    await addSet(title, folderId);
+    await addSet(title, folderId, parentSetId);
   }
   closeSetModal();
-  renderDashboard();
+
+  if (state.view === 'set' && state.currentSetId) {
+    openSetView(state.currentSetId);
+  } else {
+    renderDashboard();
+  }
 }
 
 // --- Card Modal ---
-function openCardModal(id = null, front = '', back = '') {
+async function openCardModal(id = null, front = '', back = '', setId = null) {
   state.editCardId = id;
+  const actualSetId = setId || state.currentSetId;
+
   document.getElementById('card-modal-title').textContent = id ? 'Edit Card' : 'Add Card';
   document.getElementById('card-front-input').value = front;
   document.getElementById('card-back-input').value = back;
+
+  const moveGroup = document.getElementById('card-set-move-group');
+  if (isAdmin()) {
+    moveGroup.classList.remove('hidden');
+    const allSets = await getSets();
+    const selSet = document.getElementById('card-set-select');
+    selSet.innerHTML = allSets.map(s => `<option value="${s.id}" ${s.id == actualSetId ? 'selected' : ''}>${escHtml(s.title)}</option>`).join('');
+  } else {
+    moveGroup.classList.add('hidden');
+  }
+
   document.getElementById('card-modal-overlay').classList.remove('hidden');
   setTimeout(() => document.getElementById('card-front-input').focus(), 50);
 }
@@ -503,6 +571,8 @@ function closeCardModal() {
 async function saveCardModal() {
   const front = document.getElementById('card-front-input').value.trim();
   const back = document.getElementById('card-back-input').value.trim();
+  const selSet = document.getElementById('card-set-select');
+  const targetSetId = selSet.value ? parseInt(selSet.value) : state.currentSetId;
 
   if (!front || !back) {
     alert("Please enter both a Term and a Definition.");
@@ -510,18 +580,19 @@ async function saveCardModal() {
   }
 
   if (state.editCardId) {
-    await updateCard(state.editCardId, front, back);
+    await updateCard(state.editCardId, front, back, targetSetId);
     showToast('Card updated successfully!');
   } else {
-    await addCard(state.currentSetId, front, back);
+    await addCard(targetSetId, front, back);
     showToast('Card added successfully!');
   }
   closeCardModal();
 
-  const updated = await getCardsBySet(state.currentSetId);
-  state.currentCards = updated;
-  document.getElementById('set-view-count').textContent = `${updated.length} card${updated.length !== 1 ? 's' : ''}`;
-  renderCardList(updated);
+  if (state.view === 'set' && state.currentSetId) {
+    openSetView(state.currentSetId);
+  } else {
+    renderDashboard();
+  }
 }
 
 // --- Confirm Modal ---

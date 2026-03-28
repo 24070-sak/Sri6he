@@ -55,6 +55,7 @@ const Folder = sequelize.define('folder', {
 const Set = sequelize.define('set', {
     title: { type: DataTypes.STRING, allowNull: false },
     folderId: { type: DataTypes.INTEGER, allowNull: true },
+    parentSetId: { type: DataTypes.INTEGER, allowNull: true },
     createdAt: { type: DataTypes.BIGINT }
 }, { timestamps: false });
 
@@ -64,6 +65,21 @@ const Card = sequelize.define('card', {
     back: { type: DataTypes.TEXT },
     createdAt: { type: DataTypes.BIGINT }
 }, { timestamps: false });
+
+// Helper for recursive deletion
+async function deleteSetRecursively(setId) {
+    // Delete cards in this set
+    await Card.destroy({ where: { setId } });
+
+    // Find child sets
+    const childSets = await Set.findAll({ where: { parentSetId: setId } });
+    for (const s of childSets) {
+        await deleteSetRecursively(s.id);
+    }
+
+    // Delete the set itself
+    await Set.destroy({ where: { id: setId } });
+}
 
 // Initialize database without erasing existing data
 sequelize.sync().then(() => console.log('Database synced perfectly across whatever adapter is detected!'));
@@ -86,8 +102,7 @@ app.delete('/api/folders/:id', async (req, res) => {
     const folderId = req.params.id;
     const sets = await Set.findAll({ where: { folderId } });
     for (const s of sets) {
-        await Card.destroy({ where: { setId: s.id } });
-        await s.destroy();
+        await deleteSetRecursively(s.id);
     }
     await Folder.destroy({ where: { id: folderId } });
     res.json({ success: true });
@@ -112,9 +127,7 @@ app.put('/api/sets/:id', async (req, res) => {
     res.json({ success: true });
 });
 app.delete('/api/sets/:id', async (req, res) => {
-    const setId = req.params.id;
-    await Card.destroy({ where: { setId } });
-    await Set.destroy({ where: { id: setId } });
+    await deleteSetRecursively(req.params.id);
     res.json({ success: true });
 });
 

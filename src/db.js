@@ -44,13 +44,13 @@ export async function getSet(id) {
     return request(`/sets/${id}`);
 }
 
-export async function addSet(title, folderId) {
-    const r = await request('/sets', 'POST', { title, folderId, createdAt: Date.now() });
+export async function addSet(title, folderId = null, parentSetId = null) {
+    const r = await request('/sets', 'POST', { title, folderId, parentSetId, createdAt: Date.now() });
     return r.id;
 }
 
-export async function updateSet(id, title, folderId) {
-    return request(`/sets/${id}`, 'PUT', { title, folderId });
+export async function updateSet(id, title, folderId = null, parentSetId = null) {
+    return request(`/sets/${id}`, 'PUT', { title, folderId, parentSetId });
 }
 
 export async function deleteSet(id) {
@@ -67,8 +67,10 @@ export async function addCard(setId, front, back) {
     return r.id;
 }
 
-export async function updateCard(id, front, back) {
-    return request(`/cards/${id}`, 'PUT', { front, back });
+export async function updateCard(id, front, back, setId = null) {
+    const data = { front, back };
+    if (setId) data.setId = setId;
+    return request(`/cards/${id}`, 'PUT', data);
 }
 
 export async function deleteCard(id) {

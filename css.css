@@ -1,0 +1,662 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    /* SupNum Brand Colors - Default Light Theme */
+    --primary-blue: #1C3586;
+    --primary-green: #2EAB4E;
+
+    --accent-blue: #3B82F6;
+    --accent-glow: #60A5FA;
+
+    --glow-blue: rgba(28, 53, 134, 0.3);
+    --glow-green: rgba(46, 171, 78, 0.3);
+
+    /* Text Colors */
+    --p-text-main: #1e293b;
+    --p-text-dim: #64748b;
+    --dark: #020617;
+
+    --gray-900: #0f172a;
+    --gray-800: #1e293b;
+    --gray-700: #334155;
+    --gray-600: #475569;
+    --gray-500: #64748b;
+    --gray-300: #cbd5e1;
+
+    /* Feedback Colors */
+    --success: #22c55e;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+
+    /* Glass System - Light */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-bg-light: rgba(255, 255, 255, 0.85);
+    --glass-bg-hover: rgba(255, 255, 255, 0.9);
+
+    --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+    --glass-border-highlight: rgba(255, 255, 255, 0.8);
+
+    --glass-blur: blur(20px) saturate(180%);
+    --glass-inner-glow: inset 0 0 20px rgba(255, 255, 255, 0.5);
+    --glass-shimmer: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.4) 50%, transparent 70%);
+
+    /* SupNum Gradients */
+    --supnum-gradient: linear-gradient(135deg, #1C3586 0%, #2EAB4E 100%);
+    --supnum-gradient-hover: linear-gradient(135deg, #162a6b 0%, #258a3f 100%);
+    --body-bg: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+
+    /* Shadows & Radius */
+    --radius-lg: 32px;
+    --radius-md: 20px;
+    --radius-sm: 14px;
+
+    /* Light Shadows */
+    --shadow-card:
+        0 10px 30px -5px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.5);
+
+    --shadow-hover:
+        0 20px 40px -5px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.6);
+
+    --shadow-glow: 0 0 20px rgba(28, 53, 134, 0.2);
+    --verified-blue: #1D9BF0;
+}
+
+/* Global Verified Badge Styles */
+.verified-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: var(--verified-blue);
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    margin-left: 6px;
+    vertical-align: middle;
+    box-shadow: 0 0 10px rgba(29, 155, 240, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.verified-badge svg {
+    width: 10px;
+    height: 10px;
+    stroke-width: 4px;
+}
+
+.verified-badge.teacher {
+    background: var(--primary-green);
+    box-shadow: 0 0 10px rgba(46, 171, 78, 0.4);
+}
+
+.verified-badge.root {
+    background: var(--primary-blue);
+    box-shadow: 0 0 10px rgba(28, 53, 134, 0.4);
+}
+
+[data-theme='dark'] {
+    /* SupNum Brand Colors - Neon Glow 2026 */
+    --primary-blue: #3B82F6;
+    --primary-green: #34D399;
+
+    --accent-blue: #60A5FA;
+    --accent-glow: #2563EB;
+
+    --glow-blue: rgba(59, 130, 246, 0.5);
+    --glow-green: rgba(52, 211, 153, 0.4);
+
+    /* Text Colors - Dark Mode High Contrast */
+    --p-text-main: #F8FAFC;
+    --p-text-dim: #94A3B8;
+
+    --gray-900: #F8FAFC;
+    --gray-800: #E2E8F0;
+    --gray-700: #CBD5E1;
+    --gray-600: #94A3B8;
+    --gray-500: #64748B;
+    --gray-300: #334155;
+
+    /* Glass System - Dark Refined */
+    --glass-bg: rgba(15, 23, 42, 0.4);
+    /* More transparent */
+    --glass-bg-light: rgba(30, 41, 59, 0.4);
+    --glass-bg-hover: rgba(51, 65, 85, 0.3);
+
+    --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+    --glass-border-highlight: rgba(255, 255, 255, 0.15);
+
+    --glass-blur: blur(20px) saturate(180%);
+    --glass-inner-glow: inset 0 0 30px rgba(255, 255, 255, 0.05);
+
+    --supnum-gradient: linear-gradient(135deg, #3B82F6 0%, #34D399 100%);
+
+    /* Deep Space Gradient for Depth */
+    --body-bg:
+        radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(52, 211, 153, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 1) 0%, rgba(2, 6, 23, 1) 100%);
+
+    /* Shadows */
+    --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.15);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--body-bg);
+    background-color: #f0f4f8;
+    /* Fallback */
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: var(--p-text-main);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    transition: color 0.3s ease;
+}
+
+/* Fix: Do NOT override background-image on dark mode, only fallback color */
+[data-theme='dark'] body {
+    background-color: #020617;
+    background-image: var(--body-bg);
+    /* Ensure gradient applies */
+}
+
+/* Global Animations */
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* =========================================
+   Global Glass Components
+   ========================================= */
+
+/* Glass Card - Adaptive */
+.glass-panel,
+.card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-top: 1px solid var(--glass-border-highlight);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-card);
+    transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Iridescent shimmer overlay */
+.card::after,
+.glass-panel::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(115deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.05) 45%,
+            rgba(255, 255, 255, 0.0) 55%,
+            transparent 100%);
+    transform: skewX(-20deg);
+    transition: left 0.7s;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.card:hover::after,
+.glass-panel:hover::after {
+    left: 100%;
+    opacity: 1;
+    transition: left 0.7s, opacity 0.3s;
+}
+
+.card:hover,
+.glass-panel:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: var(--shadow-hover);
+    background: var(--glass-bg-hover);
+    border-color: var(--glass-border-highlight);
+}
+
+/* Buttons - Standardized */
+.btn {
+    padding: 1rem 2rem;
+    border-radius: 99px;
+    /* Pill shape */
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-transform: none;
+    /* Modern style */
+    font-size: 0.95rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn:active {
+    transform: scale(0.96);
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.5s, opacity 0.5s;
+}
+
+.btn:hover::before {
+    transform: scale(2);
+    opacity: 1;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-blue), #2546a3);
+    color: white;
+    box-shadow: 0 6px 20px rgba(28, 53, 134, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #182d73, var(--primary-blue));
+    box-shadow: 0 10px 30px rgba(28, 53, 134, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary-blue);
+    color: var(--primary-blue);
+}
+
+.btn-outline:hover {
+    background: var(--primary-blue);
+    color: white;
+    box-shadow: 0 6px 20px rgba(28, 53, 134, 0.3);
+}
+
+.btn-block {
+    width: 100%;
+    padding: 1.25rem;
+    font-size: 1.15rem;
+}
+
+/* Form Inputs - Neumorphic Glass */
+.input-glass,
+.auth-input {
+    width: 100%;
+    padding: 1.25rem 1.75rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    /* Use transparent var */
+    backdrop-filter: blur(10px);
+    font-size: 1rem;
+    font-family: inherit;
+    font-weight: 500;
+    color: var(--p-text-main);
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.input-glass::placeholder,
+.auth-input::placeholder {
+    color: var(--p-text-dim);
+    opacity: 0.8;
+}
+
+.input-glass:focus,
+.auth-input:focus {
+    outline: none;
+    background: var(--glass-bg-hover);
+    border-color: var(--primary-blue);
+    box-shadow:
+        0 10px 25px -5px rgba(37, 99, 235, 0.15),
+        0 0 0 1px var(--primary-blue);
+    transform: translateY(-2px);
+}
+
+[data-theme='dark'] select.auth-input {
+    background-color: #1e293b;
+    color: var(--p-text-main);
+}
+
+/* Auth Pages Standard Layout */
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.auth-card {
+    background: var(--glass-bg-light);
+    backdrop-filter: blur(60px) saturate(200%);
+    -webkit-backdrop-filter: blur(60px) saturate(200%);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 3.5rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: var(--shadow-card), var(--glass-inner-glow);
+    text-align: center;
+    animation: fadeInUp 0.6s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+    pointer-events: none;
+}
+
+.auth-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    color: var(--primary-blue);
+    letter-spacing: -1px;
+}
+
+.auth-subtitle {
+    color: var(--gray-600);
+    margin-bottom: 2.5rem;
+    font-size: 1.1rem;
+}
+
+.auth-link {
+    margin-top: 2rem;
+    color: var(--primary-blue);
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.auth-link:hover {
+    color: var(--primary-green);
+    text-decoration: underline;
+}
+
+/* Global Container for consistent padding */
+.main-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+@media (max-width: 768px) {
+    .main-container {
+        padding: 0 1rem;
+    }
+}
+
+/* =========================================
+   Mobile Responsive Utilities & Breakpoints
+   ========================================= */
+
+/* Large Tablets and Small Desktops (1024px and below) */
+@media (max-width: 1024px) {
+    body {
+        font-size: 15px;
+    }
+
+    .card {
+        padding: 2rem;
+    }
+
+    .btn {
+        padding: 0.9rem 1.75rem;
+        font-size: 0.95rem;
+        min-height: 44px;
+    }
+
+    .btn-block {
+        padding: 1.15rem;
+        font-size: 1.1rem;
+    }
+
+    .input-glass,
+    .auth-input {
+        padding: 1.15rem 1.35rem;
+        font-size: 1rem;
+        min-height: 48px;
+    }
+
+    .auth-card {
+        padding: 3rem;
+        max-width: 450px;
+    }
+
+    .auth-title {
+        font-size: 2rem;
+    }
+
+    .auth-subtitle {
+        font-size: 1.05rem;
+    }
+}
+
+/* Tablets (768px and below) */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    .card {
+        padding: 1.75rem;
+        border-radius: 20px;
+    }
+
+    .btn {
+        padding: 0.85rem 1.5rem;
+        font-size: 0.9rem;
+        min-height: 48px;
+        border-radius: 14px;
+    }
+
+    .btn-block {
+        padding: 1.1rem;
+        font-size: 1.05rem;
+    }
+
+    .input-glass,
+    .auth-input {
+        padding: 1.1rem 1.25rem;
+        font-size: 0.95rem;
+        min-height: 52px;
+        border-radius: 16px;
+    }
+
+    .auth-container {
+        padding: 1.5rem;
+    }
+
+    .auth-card {
+        padding: 2.5rem;
+        max-width: 100%;
+        border-radius: 20px;
+    }
+
+    .auth-title {
+        font-size: 1.85rem;
+    }
+
+    .auth-subtitle {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Mobile-specific utilities */
+    .glass-panel {
+        padding: 2rem;
+        border-radius: 20px;
+    }
+}
+
+/* Mobile Phones (480px and below) */
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+
+    .card {
+        padding: 1.5rem;
+        border-radius: 18px;
+    }
+
+    .btn {
+        padding: 0.8rem 1.25rem;
+        font-size: 0.85rem;
+        min-height: 48px;
+        border-radius: 12px;
+    }
+
+    .btn-block {
+        padding: 1rem;
+        font-size: 1rem;
+    }
+
+    .input-glass,
+    .auth-input {
+        padding: 1rem 1.15rem;
+        font-size: 0.9rem;
+        min-height: 52px;
+        border-radius: 14px;
+    }
+
+    .auth-container {
+        padding: 1rem;
+    }
+
+    .auth-card {
+        padding: 2rem 1.5rem;
+        border-radius: 18px;
+    }
+
+    .auth-title {
+        font-size: 1.65rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .glass-panel {
+        padding: 1.5rem;
+        border-radius: 18px;
+    }
+}
+
+/* Small Mobile Phones (320px and below) */
+@media (max-width: 320px) {
+    body {
+        font-size: 13px;
+    }
+
+    .card {
+        padding: 1.25rem;
+        border-radius: 16px;
+    }
+
+    .btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.8rem;
+        min-height: 44px;
+    }
+
+    .btn-block {
+        padding: 0.95rem;
+        font-size: 0.95rem;
+    }
+
+    .input-glass,
+    .auth-input {
+        padding: 0.95rem 1rem;
+        font-size: 0.85rem;
+        min-height: 48px;
+    }
+
+    .auth-card {
+        padding: 1.75rem 1.25rem;
+    }
+
+    .auth-title {
+        font-size: 1.5rem;
+    }
+
+    .auth-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .glass-panel {
+        padding: 1.25rem;
+    }
+}
