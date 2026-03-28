@@ -659,6 +659,24 @@ function setupStaticListeners() {
     }
   };
 
+  // ---- Theme Toggle ----
+  const toggleTheme = () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('sri6he-theme', newTheme);
+  };
+
+  // init theme from storage if set
+  if (localStorage.getItem('sri6he-theme')) {
+    document.documentElement.setAttribute('data-theme', localStorage.getItem('sri6he-theme'));
+  }
+
+  const themeBtn = document.getElementById('theme-toggle');
+  if (themeBtn) themeBtn.onclick = toggleTheme;
+  const mobileThemeBtn = document.getElementById('mobile-theme-toggle');
+  if (mobileThemeBtn) mobileThemeBtn.onclick = toggleTheme;
+
   // ---- Login modal ----
   document.getElementById('login-btn').onclick = async () => {
     const email = document.getElementById('login-email').value.trim();

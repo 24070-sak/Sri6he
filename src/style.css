@@ -1291,12 +1291,27 @@ textarea.glass-input {
 
 .card-face.front {
   border-top: 3px solid var(--accent);
+  z-index: 2;
+  transition: opacity 0.1s 0.2s, z-index 0s 0.3s;
 }
 
 .card-face.back {
   transform: rotateY(180deg);
   border-top: 3px solid var(--accent2);
   background: var(--surface2);
+  z-index: 1;
+  transition: opacity 0.1s 0.2s, z-index 0s 0.3s;
+}
+
+/* Fix for transparent ghosting: hide the inactive face completely */
+.flashcard:not(.flipped) .card-face.back {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.flashcard.flipped .card-face.front {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .card-face p {
