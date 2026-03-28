@@ -1533,6 +1533,12 @@ textarea.glass-input {
 }
 
 /* App-specific responsive (640px) */
+@media (min-width: 641px) {
+  .mobile-only-theme-btn {
+    display: none !important;
+  }
+}
+
 @media (max-width:640px) {
   .sidebar {
     display: none;

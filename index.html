@@ -178,7 +178,15 @@
     <main class="content">
       <header class="top-nav">
         <h1 id="view-title"></h1>
-        <div id="top-actions" class="top-actions"></div>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div id="top-actions" class="top-actions"></div>
+          <button id="mobile-theme-toggle" class="icon-btn mobile-only-theme-btn" title="Toggle Theme"
+            style="flex-shrink:0;">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          </button>
+        </div>
       </header>
 
       <!-- Dashboard -->
@@ -292,12 +300,6 @@
           <line x1="9" y1="14" x2="15" y2="14" />
         </svg>
         Folder
-      </button>
-      <button class="nav-item" id="mobile-theme-toggle">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-        </svg>
-        Theme
       </button>
       <button class="nav-item" id="mobile-login-btn">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
