@@ -644,12 +644,6 @@ function setupStaticListeners() {
   // ---- Mobile Navigation ----
   document.getElementById('mobile-new-set').onclick = () => openSetModal();
   document.getElementById('mobile-new-folder').onclick = () => openFolderModal();
-  document.getElementById('mobile-login-btn').onclick = () => openLoginModal();
-  document.getElementById('mobile-logout-btn').onclick = () => {
-    logout();
-    applyAuthUI();
-    renderDashboard();
-  };
   document.getElementById('back-to-dashboard').onclick = () => renderDashboard();
   document.getElementById('back-from-study').onclick = () => {
     if (state.view === 'study' && state.currentSetId) {
