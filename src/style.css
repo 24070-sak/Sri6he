@@ -1871,27 +1871,29 @@ textarea.glass-input {
   position: relative;
   width: 100%;
   max-width: 420px;
-  padding: 3rem 2.5rem;
-  border-radius: 24px;
-  border: 1px solid var(--border);
-  background: var(--surface);
+  padding: 3.5rem 2.5rem;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #0f172a;
+  color: #fff;
   overflow: hidden;
   animation: modalIn .35s cubic-bezier(.34, 1.56, .64, 1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
 .login-card-glow {
   position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border-radius: 25px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent));
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #1C3586, #2EAB4E, #1C3586);
   background-size: 300% 300%;
   z-index: -1;
-  animation: glowShift 6s ease infinite;
-  opacity: .6;
-  filter: blur(10px);
+  animation: glowShift 5s ease infinite;
+  opacity: .75;
+  filter: blur(12px);
 }
 
 @keyframes glowShift {
@@ -1938,7 +1940,7 @@ textarea.glass-input {
 
 .login-subtitle {
   font-size: .9rem;
-  color: var(--txt-muted);
+  color: #94a3b8;
   font-weight: 500;
 }
 
@@ -1959,16 +1961,16 @@ textarea.glass-input {
   font-weight: 800;
   letter-spacing: .06em;
   text-transform: uppercase;
-  color: var(--txt-muted);
+  color: #cbd5e1;
 }
 
 .login-input {
   width: 100%;
-  padding: .95rem 1.15rem;
+  padding: 1.05rem 1.15rem;
   border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--surface2);
-  color: var(--txt);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
   font-size: .95rem;
   font-family: inherit;
   font-weight: 500;
@@ -1977,14 +1979,14 @@ textarea.glass-input {
 }
 
 .login-input::placeholder {
-  color: var(--txt-muted);
-  opacity: .6;
+  color: #64748b;
+  opacity: .8;
 }
 
 .login-input:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  border-color: #2EAB4E;
+  box-shadow: 0 0 0 3px rgba(46, 171, 78, 0.2);
 }
 
 .login-submit {
