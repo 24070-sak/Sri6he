@@ -82,7 +82,7 @@ async function deleteSetRecursively(setId) {
 }
 
 // Initialize database without erasing existing data
-sequelize.sync().then(() => console.log('Database synced perfectly across whatever adapter is detected!'));
+sequelize.sync({ alter: true }).then(() => console.log('Database synced perfectly across whatever adapter is detected!'));
 
 // ======================== API ENDPOINTS ========================
 
