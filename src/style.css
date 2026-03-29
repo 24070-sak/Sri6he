@@ -1249,7 +1249,7 @@ textarea.glass-input {
   perspective: 2000px;
   width: 100%;
   max-width: 640px;
-  height: 420px;
+  height: 400px;
   margin: 0 auto;
   cursor: pointer;
 }
@@ -1272,14 +1272,13 @@ textarea.glass-input {
   -webkit-backface-visibility: hidden;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
-  padding: 2.5rem 2.25rem;
-  text-align: left;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 3rem 2.5rem;
+  text-align: center;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow-y: auto;
-  gap: 0;
 }
 
 [data-theme='dark'] .card-face {
@@ -1290,7 +1289,11 @@ textarea.glass-input {
   background: #fff;
 }
 
-/* Removed flex spacers — using justify-content:center instead */
+.card-face::before,
+.card-face::after {
+  content: '';
+  margin: auto;
+}
 
 .card-face.front {
   border-top: 3px solid var(--accent);
@@ -1310,44 +1313,28 @@ textarea.glass-input {
 }
 
 .card-face p {
-  font-size: clamp(.95rem, 2.5vw, 1.3rem);
-  font-weight: 500;
-  line-height: 1.7;
+  font-size: clamp(1.25rem, 4vw, 2rem);
+  font-weight: 700;
+  line-height: 1.35;
   white-space: pre-wrap;
   word-break: break-word;
   max-width: 100%;
-  color: var(--txt);
-}
-
-/* Term (front) gets slightly bolder & bigger than definition */
-.card-face.front p {
-  font-size: clamp(1.1rem, 3vw, 1.6rem);
-  font-weight: 700;
-  text-align: center;
-  line-height: 1.4;
 }
 
 .card-hint {
-  font-size: .68rem;
+  font-size: .7rem;
   font-weight: 800;
-  letter-spacing: .18em;
+  letter-spacing: .2em;
   text-transform: uppercase;
   color: var(--txt-muted);
-  margin-bottom: 1.25rem;
-  text-align: center;
-}
-
-.card-face.front .card-hint {
-  text-align: center;
+  margin-bottom: 1.5rem;
 }
 
 .click-hint {
-  font-size: .78rem;
+  font-size: .8rem;
   color: var(--txt-muted);
-  margin-top: 1.25rem;
+  margin-top: 1.5rem;
   font-weight: 500;
-  text-align: center;
-  opacity: .7;
 }
 
 /* Study Controls */
@@ -1661,21 +1648,16 @@ textarea.glass-input {
   }
 
   .flashcard-container {
-    height: 60dvh;
-    max-height: 460px;
+    height: 55dvh;
+    max-height: 380px;
   }
 
   .card-face {
-    padding: 1.75rem 1.5rem;
+    padding: 2rem 1.5rem;
   }
 
   .card-face p {
-    font-size: 1rem;
-    line-height: 1.65;
-  }
-
-  .card-face.front p {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
   }
 
   .study-actions {
